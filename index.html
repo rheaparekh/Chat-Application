@@ -9,13 +9,29 @@
   </head>
 
 <script>
+   var user='';
+   $(document).ready(function(){
+      user=prompt("enter Nick:")
+   });
+   if(user==null){
+      user='anonymous';
+   }
    $(function(){
       var socket=io();
+      socket.on('connection',function(message){
+         socket.emit('chat message',message);
+      });
+
+      socket.on('disconnect',function(message){
+         socket.emit('chat message',message);
+      });
+      
       $('form').submit(function(){
-         socket.emit('chat message',$('#msg').val());
+         socket.emit('chat message',user+': ' +$('#msg').val());
          $('#msg').val('');
          return false;
       });
+      
       socket.on('chat message',function(message){
          $('#messages').append($('<li>').text(message));
       });
